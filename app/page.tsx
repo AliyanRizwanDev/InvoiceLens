@@ -3,12 +3,15 @@
 import { useEffect, useState } from "react";
 import UploadZone from "@/components/UploadZone";
 import { toBase64 } from "@/lib/toBase64";
+import type { ExtractedInvoice } from "@/types/invoice";
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [base64Data, setBase64Data] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [extracted, setExtracted] = useState<ExtractedInvoice | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!file) {
@@ -16,6 +19,9 @@ export default function Home() {
       setBase64Data(null);
       return;
     }
+
+    setExtracted(null);
+    setError(null);
 
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
@@ -32,10 +38,31 @@ export default function Home() {
   }, [file]);
 
   async function handleProcess() {
+    if (!file || !base64Data) return;
+
     setIsProcessing(true);
-    // STUB: replace with fetch("/api/extract") in Section 3
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setIsProcessing(false);
+    setError(null);
+    setExtracted(null);
+
+    try {
+      const response = await fetch("/api/extract", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ file: base64Data, mimeType: file.type }),
+      });
+      const result = await response.json();
+
+      if (!response.ok || result.error) {
+        setError(result.error ?? "Could not read this document. Try a clearer scan or a different file.");
+        return;
+      }
+
+      setExtracted(result as ExtractedInvoice);
+    } catch {
+      setError("Could not read this document. Try a clearer scan or a different file.");
+    } finally {
+      setIsProcessing(false);
+    }
   }
 
   const isPdf = file?.type === "application/pdf";
@@ -76,7 +103,7 @@ export default function Home() {
           <button
             type="button"
             onClick={handleProcess}
-            disabled={!file || isProcessing}
+            disabled={!file || !base64Data || isProcessing}
             className="rounded-lg bg-zinc-900 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
           >
             {isProcessing ? "Reading invoice..." : "Process Invoice"}
@@ -87,6 +114,18 @@ export default function Home() {
             </p>
           ) : null}
         </div>
+
+        {error ? (
+          <p className="mt-6 text-sm text-red-600 dark:text-red-400" role="alert">
+            {error}
+          </p>
+        ) : null}
+
+        {extracted ? (
+          <pre className="mt-6 max-h-96 overflow-auto rounded-lg border border-zinc-200 bg-zinc-50 p-4 text-left text-xs text-zinc-800 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-200">
+            {JSON.stringify(extracted, null, 2)}
+          </pre>
+        ) : null}
       </main>
     </div>
   );
