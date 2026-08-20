@@ -1,9 +1,6 @@
-import {
-  ai,
-  EXTRACTION_PROMPT,
-  invoiceSchema,
-  stripBase64Prefix,
-} from "@/lib/gemini";
+import { extractWithGemini } from "@/lib/extractWithGemini";
+import { stripBase64Prefix } from "@/lib/gemini";
+import { tryExtractFromEmbeddedXml } from "@/lib/zugferd";
 
 const EXTRACTION_ERROR =
   "Could not read this document. Try a clearer scan or a different file.";
@@ -26,35 +23,18 @@ export async function POST(request: Request) {
   }
 
   try {
-    const response = await ai.models.generateContent({
-      model: "gemini-flash-latest",
-      contents: [
-        {
-          role: "user",
-          parts: [
-            { text: EXTRACTION_PROMPT },
-            {
-              inlineData: {
-                mimeType,
-                data: stripBase64Prefix(file),
-              },
-            },
-          ],
-        },
-      ],
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: invoiceSchema,
-      },
-    });
-
-    const text = response.text;
-    if (!text) {
-      return Response.json({ error: EXTRACTION_ERROR }, { status: 500 });
+    if (mimeType === "application/pdf") {
+      const pdfBytes = Uint8Array.from(
+        Buffer.from(stripBase64Prefix(file), "base64"),
+      );
+      const embedded = await tryExtractFromEmbeddedXml(pdfBytes);
+      if (embedded) {
+        return Response.json(embedded);
+      }
     }
 
-    const extracted = JSON.parse(text);
-    return Response.json({ ...extracted, source: "ai-extraction" });
+    const extracted = await extractWithGemini(file, mimeType);
+    return Response.json(extracted);
   } catch (error) {
     console.error("Extraction failed:", error);
     return Response.json({ error: EXTRACTION_ERROR }, { status: 500 });
