@@ -160,6 +160,18 @@ export default function Home() {
           </div>
         ) : null}
       </main>
+
+      <aside className="mt-8 w-full max-w-5xl border border-dashed border-ledger-line bg-surface/40 px-4 py-5 sm:px-6 sm:py-6">
+        <p className="font-sans text-xs uppercase tracking-[0.2em] text-ink/45">
+          {t.roadmap.label}
+        </p>
+        <h2 className="mt-2 font-display text-lg text-ink sm:text-xl">
+          {t.roadmap.title}
+        </h2>
+        <p className="mt-2 max-w-3xl font-sans text-sm leading-relaxed text-ink/65">
+          {t.roadmap.body}
+        </p>
+      </aside>
     </div>
   );
 }

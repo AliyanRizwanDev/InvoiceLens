@@ -8,13 +8,12 @@ import {
   type ReactNode,
 } from "react";
 import { translations, type Locale, type TranslationKey } from "@/lib/i18n";
+import { LOCALE_STORAGE_KEY, resolveLocale } from "@/lib/locale";
 
-const STORAGE_KEY = "rechnungslens-locale";
+const STORAGE_KEY = LOCALE_STORAGE_KEY;
 
 function readLocale(): Locale {
-  if (typeof window === "undefined") return "en";
-  const stored = localStorage.getItem(STORAGE_KEY);
-  return stored === "de" ? "de" : "en";
+  return resolveLocale();
 }
 
 const listeners = new Set<() => void>();
@@ -37,11 +36,17 @@ type LanguageContextValue = {
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
+export function LanguageProvider({
+  children,
+  initialLocale = "en",
+}: {
+  children: ReactNode;
+  initialLocale?: Locale;
+}) {
   const locale = useSyncExternalStore(
     subscribe,
     readLocale,
-    () => "en" as Locale,
+    () => initialLocale,
   );
 
   useEffect(() => {

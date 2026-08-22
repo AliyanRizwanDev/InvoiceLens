@@ -79,6 +79,11 @@ export const translations = {
       dark: "Dark",
       switchTo: "Switch theme",
     },
+    roadmap: {
+      label: "Coming soon",
+      title: "Direct ERP export",
+      body: "Right now you download a structured JSON record. Next up: approved invoices flow straight into your accounting software (DATEV, SAP, and similar systems), so nobody retypes fields by hand.",
+    },
   },
   de: {
     meta: {
@@ -158,6 +163,11 @@ export const translations = {
       light: "Hell",
       dark: "Dunkel",
       switchTo: "Design wechseln",
+    },
+    roadmap: {
+      label: "Demnächst",
+      title: "Direkter ERP-Export",
+      body: "Aktuell laden Sie einen strukturierten JSON-Datensatz herunter. Als Nächstes: freigegebene Rechnungen gehen direkt in Ihre Buchhaltungssoftware (DATEV, SAP und vergleichbare Systeme), ohne Felder von Hand einzutippen.",
     },
   },
 } as const satisfies Record<Locale, Record<string, unknown>>;
