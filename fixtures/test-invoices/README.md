@@ -8,7 +8,8 @@ Synthetic invoices for rehearsed RechnungsLens demos. Every file is engineered t
 | math-error.pdf | Deterministic math check | Reject (Net + VAT ≠ Gross) |
 | missing-vat-id.pdf | Required field check | Reject (VAT ID missing) |
 | malformed-vat-format.pdf | Format check, not existence check | Review (VAT ID format) |
-| zugferd-compliant.pdf | Embedded-XML fast path | Accept, 100% confidence, no AI call |
+| zugferd-compliant.pdf | Embedded-XML fast path (XML inside PDF) | Accept, 100% confidence, no AI call |
+| sample-zugferd.xml | Standalone ZUGFeRD/XRechnung XML upload | Accept, 100% confidence, no AI call |
 | messy-scan.jpg | Confidence-driven review — lead demo file | Review (low confidence / missing PO) |
 
 ## Regenerating fixtures

@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { tryExtractFromEmbeddedXml } from "../lib/zugferd.ts";
+import { tryExtractFromEmbeddedXml, parseEmbeddedXml } from "../lib/zugferd.ts";
 import { validateInvoice } from "../lib/validate.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -15,6 +15,7 @@ const REQUIRED_FILES = [
   "missing-vat-id.pdf",
   "malformed-vat-format.pdf",
   "zugferd-compliant.pdf",
+  "sample-zugferd.xml",
   "messy-scan.jpg",
 ];
 
@@ -96,6 +97,10 @@ const LIVE_EXPECTED = {
     decision: "accept",
     source: "embedded-xml",
   },
+  "sample-zugferd.xml": {
+    decision: "accept",
+    source: "embedded-xml",
+  },
   "messy-scan.jpg": { decision: "review", source: "ai-extraction" },
 };
 
@@ -103,6 +108,7 @@ const MIME = {
   ".pdf": "application/pdf",
   ".jpg": "image/jpeg",
   ".jpeg": "image/jpeg",
+  ".xml": "application/xml",
 };
 
 const results = [];
@@ -150,6 +156,25 @@ record(
   "zugferd-compliant.pdf validates to accept locally",
   zugferdValidation?.decision === "accept",
   zugferdValidation?.decision ?? "null",
+);
+
+const sampleXmlText = readFileSync(join(FIXTURES, "sample-zugferd.xml"), "utf8");
+const sampleXmlParsed = parseEmbeddedXml(sampleXmlText);
+const sampleXmlValidation = sampleXmlParsed
+  ? validateInvoice(sampleXmlParsed)
+  : null;
+
+record(
+  "sample-zugferd.xml parses locally as embedded-xml",
+  sampleXmlParsed?.source === "embedded-xml" &&
+    sampleXmlParsed.invoiceNumber === "INV-TEST-001",
+  sampleXmlParsed ? `${sampleXmlParsed.source} / ${sampleXmlParsed.invoiceNumber}` : "null",
+);
+
+record(
+  "sample-zugferd.xml validates to accept locally",
+  sampleXmlValidation?.decision === "accept",
+  sampleXmlValidation?.decision ?? "null",
 );
 
 for (const [filename, intent] of Object.entries(OFFLINE_INTENT)) {

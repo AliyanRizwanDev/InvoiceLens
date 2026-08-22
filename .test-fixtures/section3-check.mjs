@@ -6,6 +6,7 @@ import { stripBase64Prefix } from "../lib/gemini.ts";
 import { parseEmbeddedXml, tryExtractFromEmbeddedXml } from "../lib/zugferd.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const testInvoices = join(__dirname, "..", "fixtures", "test-invoices");
 const fixtures = __dirname;
 
 const results = [];
@@ -24,7 +25,7 @@ record(
 );
 
 // Part B: XML parser
-const xml = readFileSync(join(fixtures, "sample-zugferd.xml"), "utf8");
+const xml = readFileSync(join(testInvoices, "sample-zugferd.xml"), "utf8");
 const parsed = parseEmbeddedXml(xml);
 record(
   "ZUGFeRD XML parses to ExtractedInvoice shape",

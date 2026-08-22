@@ -89,7 +89,7 @@ Free key from [Google AI Studio](https://aistudio.google.com/apikey). ZUGFeRD fi
 
 ## Test fixtures
 
-Six files in `fixtures/test-invoices/`, each with a known expected decision:
+Seven files in `fixtures/test-invoices/`, each with a known expected decision:
 
 | File | Expected decision |
 |------|-------------------|
@@ -98,6 +98,7 @@ Six files in `fixtures/test-invoices/`, each with a known expected decision:
 | `missing-vat-id.pdf` | Reject |
 | `malformed-vat-format.pdf` | Review (VAT format) |
 | `zugferd-compliant.pdf` | Release via embedded XML (no AI) |
+| `sample-zugferd.xml` | Release via standalone XML upload (no AI) |
 | `messy-scan.jpg` | Review (low confidence / missing PO) |
 
 Details: [fixtures/test-invoices/README.md](fixtures/test-invoices/README.md)
