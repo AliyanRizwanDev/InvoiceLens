@@ -11,7 +11,8 @@
     "test": "vitest",
     "generate:fixtures": "node scripts/generate-invoices.mjs",
     "verify:fixtures": "node scripts/verify-fixtures.mjs",
-    "verify:fixtures:live": "node scripts/verify-fixtures.mjs --live"
+    "verify:fixtures:live": "node scripts/verify-fixtures.mjs --live",
+    "capture:screenshots": "node scripts/capture-readme-screenshots.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.17.0",

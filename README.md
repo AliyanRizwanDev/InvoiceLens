@@ -39,7 +39,8 @@ Structured XML is read directly when present. No Gemini call. Everything else go
 - Gemini extraction for scans and plain PDFs
 - Validation: required fields, `DE` + 9-digit VAT format, math check (±€0.01), PO warning, confidence threshold at 70
 - Ledger-style results UI with JSON export
-- English / German UI toggle
+- English / German UI toggle (defaults from browser language)
+- ERP export roadmap (DATEV, SAP, and similar systems)
 
 ## Tech stack
 
@@ -53,6 +54,23 @@ Structured XML is read directly when present. No Gemini call. Everything else go
 Stateless: upload → process → show result. No database.
 
 **Live demo:** [rechnungs-lens-tawny.vercel.app](https://rechnungs-lens-tawny.vercel.app)
+
+## Screenshots
+
+Upload and review flow on the [live demo](https://rechnungs-lens-tawny.vercel.app) (ZUGFeRD fixture, no AI call):
+
+| Upload | Release decision |
+|--------|------------------|
+| ![Upload screen](docs/screenshots/home.png) | ![Release decision with field checks](docs/screenshots/results-release.png) |
+
+Structured JSON export is available today. **Direct ERP export** (DATEV, SAP, and similar accounting systems) is on the roadmap so approved invoices no longer get retyped by hand.
+
+![ERP export roadmap note on the live demo](docs/screenshots/roadmap.png)
+
+## Roadmap
+
+- **Now:** explainable extraction, deterministic validation, Release / Review / Reject routing, JSON download
+- **Coming soon:** post approved invoices straight into company ERP / accounting software (DATEV, SAP, and comparable systems)
 
 ## Quick start
 
