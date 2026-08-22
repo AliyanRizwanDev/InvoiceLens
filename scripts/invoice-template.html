@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Rechnung {{invoiceNumber}}</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        color: #1f2a22;
+        margin: 48px;
+        font-size: 13px;
+        line-height: 1.45;
+      }
+      h1 {
+        font-size: 28px;
+        letter-spacing: 0.08em;
+        margin: 0 0 8px;
+      }
+      .meta {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin: 32px 0;
+      }
+      .block {
+        border: 1px solid #c7cbbd;
+        padding: 16px;
+      }
+      .block h2 {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        margin: 0 0 12px;
+        color: #5a635c;
+      }
+      .field {
+        margin-bottom: 8px;
+      }
+      .label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #5a635c;
+      }
+      .value {
+        font-size: 15px;
+        font-weight: 600;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 24px;
+      }
+      th,
+      td {
+        border-bottom: 1px solid #c7cbbd;
+        padding: 10px 8px;
+        text-align: left;
+      }
+      th {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #5a635c;
+      }
+      td.amount,
+      th.amount {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      .totals {
+        margin-top: 24px;
+        margin-left: auto;
+        width: 280px;
+      }
+      .totals .row {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        border-bottom: 1px solid #e3e5dc;
+      }
+      .totals .row.total {
+        font-size: 16px;
+        font-weight: 700;
+        border-bottom: 2px solid #1f2a22;
+        margin-top: 8px;
+        padding-top: 10px;
+      }
+      .footer {
+        margin-top: 48px;
+        font-size: 11px;
+        color: #5a635c;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>RECHNUNG</h1>
+    <p>Synthetic test invoice for InvoiceLens demo fixtures.</p>
+
+    <div class="meta">
+      <div class="block">
+        <h2>Lieferant</h2>
+        <div class="field">
+          <div class="label">Firma</div>
+          <div class="value">{{supplier}}</div>
+        </div>
+        {{vatIdBlock}}
+      </div>
+
+      <div class="block">
+        <h2>Rechnungsdetails</h2>
+        <div class="field">
+          <div class="label">Rechnungsnummer</div>
+          <div class="value">{{invoiceNumber}}</div>
+        </div>
+        <div class="field">
+          <div class="label">Rechnungsdatum</div>
+          <div class="value">{{invoiceDateDisplay}}</div>
+        </div>
+        {{poNumberBlock}}
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Beschreibung</th>
+          <th class="amount">Menge</th>
+          <th class="amount">Einzelpreis</th>
+          <th class="amount">Netto</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Beratungsleistungen Q3</td>
+          <td class="amount">40</td>
+          <td class="amount">{{unitPriceDisplay}}</td>
+          <td class="amount">{{netAmountDisplay}}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="totals">
+      <div class="row">
+        <span>Nettobetrag</span>
+        <span>{{netAmountDisplay}} {{currency}}</span>
+      </div>
+      <div class="row">
+        <span>MwSt. (19%)</span>
+        <span>{{vatAmountDisplay}} {{currency}}</span>
+      </div>
+      <div class="row total">
+        <span>Gesamtbetrag</span>
+        <span>{{grossAmountDisplay}} {{currency}}</span>
+      </div>
+    </div>
+
+    <div class="footer">
+      Zahlbar innerhalb von 14 Tagen. USt-IdNr. und Beträge sind absichtlich groß
+      gesetzt, damit die Extraktion zuverlässig funktioniert.
+    </div>
+  </body>
+</html>
