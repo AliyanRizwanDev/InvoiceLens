@@ -1,79 +1,51 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import FilePreview from "@/components/FilePreview";
+import FileUploadStatus from "@/components/FileUploadStatus";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useLanguage } from "@/components/LanguageProvider";
+import ProcessingPanel from "@/components/ProcessingPanel";
 import ResultsView from "@/components/ResultsView";
 import UploadZone from "@/components/UploadZone";
-import { toBase64 } from "@/lib/toBase64";
+import { waitForMinimum } from "@/lib/minDelay";
+import {
+  fileMimeType,
+  isXmlFile,
+  useFilePreview,
+} from "@/lib/useFilePreview";
+import { btnPrimary } from "@/lib/ui";
 import type { ExtractedInvoiceWithValidation } from "@/types/invoice";
 
-function fileMimeType(file: File): string {
-  if (file.type) return file.type;
-  if (file.name.toLowerCase().endsWith(".xml")) return "application/xml";
-  return file.type;
-}
-
-function isXmlFile(file: File): boolean {
-  return isXmlMime(fileMimeType(file)) || file.name.toLowerCase().endsWith(".xml");
-}
-
-function isXmlMime(mimeType: string): boolean {
-  return mimeType === "application/xml" || mimeType === "text/xml";
-}
+const MIN_PROCESSING_MS = 1200;
 
 export default function Home() {
+  const { t } = useLanguage();
   const [file, setFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [xmlPreview, setXmlPreview] = useState<string | null>(null);
-  const [base64Data, setBase64Data] = useState<string | null>(null);
+  const { previewUrl, xmlPreview, base64Data } = useFilePreview(file);
   const [isProcessing, setIsProcessing] = useState(false);
   const [result, setResult] = useState<ExtractedInvoiceWithValidation | null>(
     null,
   );
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!file) {
-      setPreviewUrl(null);
-      setXmlPreview(null);
-      setBase64Data(null);
-      return;
-    }
-
+  function handleFileAccepted(next: File) {
+    setFile(next);
     setResult(null);
     setError(null);
-    setXmlPreview(null);
+  }
 
-    if (isXmlFile(file)) {
-      setPreviewUrl(null);
-      let cancelled = false;
-      void file.text().then((text) => {
-        if (!cancelled) setXmlPreview(text);
-      });
-      void toBase64(file).then((data) => {
-        if (!cancelled) setBase64Data(data);
-      });
-      return () => {
-        cancelled = true;
-      };
-    }
-
-    const url = URL.createObjectURL(file);
-    setPreviewUrl(url);
-
-    let cancelled = false;
-    void toBase64(file).then((data) => {
-      if (!cancelled) setBase64Data(data);
-    });
-
-    return () => {
-      cancelled = true;
-      URL.revokeObjectURL(url);
-    };
-  }, [file]);
+  function clearFile() {
+    setFile(null);
+    setError(null);
+    setResult(null);
+    setIsProcessing(false);
+  }
 
   async function handleProcess() {
-    if (!file || !base64Data) return;
+    if (!file || !base64Data || isProcessing) return;
 
+    const startedAt = Date.now();
     setIsProcessing(true);
     setError(null);
     setResult(null);
@@ -82,71 +54,86 @@ export default function Home() {
       const response = await fetch("/api/extract", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ file: base64Data, mimeType: fileMimeType(file) }),
+        body: JSON.stringify({
+          file: base64Data,
+          mimeType: fileMimeType(file),
+        }),
       });
       const data = await response.json();
 
+      await waitForMinimum(MIN_PROCESSING_MS, startedAt);
+
       if (!response.ok || data.error) {
-        setError(
-          data.error ??
-            "Could not read this document. Try a clearer scan or a different file.",
-        );
+        setError(data.error ?? t.errors.extract);
         return;
       }
 
       setResult(data as ExtractedInvoiceWithValidation);
     } catch {
-      setError(
-        "Could not read this document. Try a clearer scan or a different file.",
-      );
+      await waitForMinimum(MIN_PROCESSING_MS, startedAt);
+      setError(t.errors.extract);
     } finally {
       setIsProcessing(false);
     }
   }
 
-  const isPdf = file?.type === "application/pdf";
-  const isImage = file?.type.startsWith("image/") ?? false;
+  const mime = file ? fileMimeType(file) : "";
+  const isPdf = mime === "application/pdf";
+  const isImage = mime.startsWith("image/");
   const isXml = file ? isXmlFile(file) : false;
+  const fileReady = Boolean(file && base64Data);
+  const showResultsSection = isProcessing || Boolean(result);
 
   return (
-    <div className="flex flex-1 flex-col items-center px-4 py-12">
+    <div className="relative flex flex-1 flex-col items-center px-4 py-12">
+      <div className="absolute right-4 top-4 z-10 sm:right-6 sm:top-6">
+        <LanguageSwitcher />
+      </div>
+
       <main className="w-full max-w-5xl border border-ledger-line bg-paper p-6 sm:p-10">
-        <h1 className="text-center font-display text-3xl text-ink sm:text-4xl">
-          InvoiceLens
-        </h1>
-        <p className="mt-2 mb-8 text-center font-sans text-sm text-ink/70">
-          Upload an invoice to extract and validate its data
-        </p>
+        <header className="mb-8 pt-8 text-center sm:pt-0">
+          <p className="font-sans text-xs uppercase tracking-[0.2em] text-ink/45">
+            {t.meta.eyebrow}
+          </p>
+          <h1 className="mt-2 font-display text-3xl text-ink sm:text-4xl">
+            {t.meta.productName}
+          </h1>
+          <p className="mx-auto mt-3 max-w-xl font-sans text-sm leading-relaxed text-ink/70">
+            {t.meta.tagline}
+          </p>
+          <p className="mt-2 font-sans text-xs text-ink/45">{t.meta.formats}</p>
+        </header>
 
-        <UploadZone onFileAccepted={setFile} />
+        <UploadZone onFileAccepted={handleFileAccepted} />
 
-        {isProcessing ? (
-          <div className="mt-8 space-y-3" aria-busy="true" aria-live="polite">
-            <p className="font-sans text-sm text-ink/70">Reading invoice...</p>
-            <div className="space-y-0">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="flex justify-between border-b border-ledger-line py-3"
-                >
-                  <div className="h-4 w-24 bg-ledger-line/40 motion-safe:animate-pulse" />
-                  <div className="h-4 w-32 bg-ledger-line/40 motion-safe:animate-pulse" />
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className="mt-6 flex flex-col items-center gap-3">
-            <button
-              type="button"
-              onClick={handleProcess}
-              disabled={!file || !base64Data}
-              className="border-2 border-ink px-6 py-2.5 font-sans text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-paper focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stamp-review disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Process Invoice
-            </button>
-          </div>
-        )}
+        {file ? (
+          <>
+            <FileUploadStatus
+              file={file}
+              ready={fileReady}
+              onClear={clearFile}
+            />
+            <FilePreview
+              previewUrl={previewUrl}
+              xmlPreview={xmlPreview}
+              isPdf={isPdf}
+              isImage={isImage}
+              isXml={isXml}
+            />
+          </>
+        ) : null}
+
+        <div className="mt-6 flex flex-col items-center gap-3">
+          <button
+            type="button"
+            onClick={handleProcess}
+            disabled={!fileReady || isProcessing}
+            aria-busy={isProcessing}
+            className={`${btnPrimary} min-w-[11rem]`}
+          >
+            {isProcessing ? t.actions.processing : t.actions.process}
+          </button>
+        </div>
 
         {error ? (
           <p className="mt-6 font-sans text-sm text-stamp-reject" role="alert">
@@ -154,15 +141,20 @@ export default function Home() {
           </p>
         ) : null}
 
-        {result ? (
-          <ResultsView
-            result={result}
-            previewUrl={previewUrl}
-            xmlPreview={xmlPreview}
-            isPdf={isPdf}
-            isImage={isImage}
-            isXml={isXml}
-          />
+        {showResultsSection ? (
+          <div className="mt-10 border-t border-ledger-line pt-10">
+            {isProcessing ? <ProcessingPanel /> : null}
+            {result && !isProcessing ? (
+              <ResultsView
+                result={result}
+                previewUrl={previewUrl}
+                xmlPreview={xmlPreview}
+                isPdf={isPdf}
+                isImage={isImage}
+                isXml={isXml}
+              />
+            ) : null}
+          </div>
         ) : null}
       </main>
     </div>

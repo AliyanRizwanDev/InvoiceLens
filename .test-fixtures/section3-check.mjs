@@ -1,7 +1,6 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { pathToFileURL } from "node:url";
 import { PDFDocument } from "pdf-lib";
 import { stripBase64Prefix } from "../lib/gemini.ts";
 import { parseEmbeddedXml, tryExtractFromEmbeddedXml } from "../lib/zugferd.ts";

@@ -2,18 +2,20 @@
 
 import DecisionStamp from "@/components/DecisionStamp";
 import FieldRow from "@/components/FieldRow";
+import { useLanguage } from "@/components/LanguageProvider";
+import { btnStamp } from "@/lib/ui";
 import type { ExtractedInvoiceWithValidation } from "@/types/invoice";
 
-const FIELD_ORDER = [
-  { key: "supplier", label: "Supplier" },
-  { key: "invoiceNumber", label: "Invoice Number" },
-  { key: "invoiceDate", label: "Invoice Date" },
-  { key: "vatId", label: "VAT ID" },
-  { key: "poNumber", label: "PO Number" },
-  { key: "netAmount", label: "Net Amount" },
-  { key: "vatAmount", label: "VAT Amount" },
-  { key: "grossAmount", label: "Gross Amount" },
-  { key: "currency", label: "Currency" },
+const FIELD_KEYS = [
+  "supplier",
+  "invoiceNumber",
+  "invoiceDate",
+  "vatId",
+  "poNumber",
+  "netAmount",
+  "vatAmount",
+  "grossAmount",
+  "currency",
 ] as const;
 
 type ResultsViewProps = {
@@ -42,7 +44,7 @@ function formatFieldValue(
   return String(value);
 }
 
-function buildDownloadRecord(result: ExtractedInvoiceWithValidation) {
+function buildCompactRecord(result: ExtractedInvoiceWithValidation) {
   return {
     supplier: result.supplier,
     invoiceNumber: result.invoiceNumber,
@@ -55,6 +57,12 @@ function buildDownloadRecord(result: ExtractedInvoiceWithValidation) {
     currency: result.currency,
     source: result.source,
     decision: result.validation.decision,
+  };
+}
+
+function buildDownloadRecord(result: ExtractedInvoiceWithValidation) {
+  return {
+    ...buildCompactRecord(result),
     fields: result.validation.fields,
   };
 }
@@ -79,45 +87,47 @@ export default function ResultsView({
   isImage,
   isXml,
 }: ResultsViewProps) {
+  const { t } = useLanguage();
   const isEmbeddedXml = result.source === "embedded-xml";
-  const record = buildDownloadRecord(result);
-  const caseRef = result.invoiceNumber ?? "Pending";
+  const compactRecord = buildCompactRecord(result);
+  const downloadRecord = buildDownloadRecord(result);
+  const caseRef = result.invoiceNumber ?? t.results.pending;
 
   return (
-    <div className="mt-10 space-y-16 border-t border-ledger-line pt-10">
-      {/* Extraction view */}
+    <div className="motion-safe:animate-fade-in space-y-14">
       <section aria-labelledby="extraction-heading">
         <h2
           id="extraction-heading"
           className="font-display text-xl text-ink sm:text-2xl"
         >
-          Case: {caseRef}
+          {t.results.case}: {caseRef}
         </h2>
 
         <div className="mt-8 grid gap-10 md:grid-cols-2">
           <div>
             {previewUrl && !isXml ? (
-              <div className="rotate-[1deg] border border-ledger-line bg-white p-2 shadow-md">
+              <div className="rotate-[1deg] border border-ledger-line bg-white p-2 shadow-md transition-shadow hover:shadow-lg">
                 {isPdf ? (
                   <iframe
                     src={previewUrl}
-                    title="Invoice preview"
-                    className="h-96 w-full"
+                    title={t.file.previewTitle}
+                    className="h-80 w-full"
                   />
                 ) : null}
                 {isImage ? (
+                  // eslint-disable-next-line @next/next/no-img-element -- blob URL preview
                   <img
                     src={previewUrl}
-                    alt="Invoice preview"
-                    className="max-h-96 w-full object-contain"
+                    alt={t.file.previewTitle}
+                    className="max-h-80 w-full object-contain"
                   />
                 ) : null}
               </div>
             ) : null}
 
             {xmlPreview && isXml ? (
-              <div className="rotate-[1deg] border border-ledger-line bg-white p-2 shadow-md">
-                <pre className="max-h-96 overflow-auto p-3 font-mono text-xs text-ink">
+              <div className="rotate-[1deg] border border-ledger-line bg-white p-2 shadow-md transition-shadow hover:shadow-lg">
+                <pre className="max-h-80 overflow-y-auto p-3 font-mono text-xs text-ink">
                   {xmlPreview}
                 </pre>
               </div>
@@ -127,15 +137,15 @@ export default function ResultsView({
           <div>
             {isEmbeddedXml ? (
               <p className="mb-4 font-sans text-sm text-ink/70">
-                Structured data found — read directly, no AI extraction needed.
+                {t.results.embeddedXmlNote}
               </p>
             ) : null}
 
             <div>
-              {FIELD_ORDER.map(({ key, label }) => (
+              {FIELD_KEYS.map((key) => (
                 <FieldRow
                   key={key}
-                  label={label}
+                  label={t.fields[key]}
                   value={formatFieldValue(key, result[key], result.currency)}
                   confidence={result.confidence[key] ?? null}
                   showConfidence={!isEmbeddedXml}
@@ -146,10 +156,9 @@ export default function ResultsView({
         </div>
       </section>
 
-      {/* Decision view */}
       <section aria-labelledby="decision-heading" className="text-center">
         <h2 id="decision-heading" className="sr-only">
-          Validation decision
+          {t.results.validationDecision}
         </h2>
 
         <div className="py-8">
@@ -157,13 +166,13 @@ export default function ResultsView({
         </div>
 
         <div className="mx-auto max-w-xl text-left">
-          {FIELD_ORDER.map(({ key, label }) => {
+          {FIELD_KEYS.map((key) => {
             const field = result.validation.fields[key];
             if (!field) return null;
             return (
               <FieldRow
                 key={key}
-                label={label}
+                label={t.fields[key]}
                 value={formatFieldValue(key, field.value, result.currency)}
                 confidence={field.confidence}
                 showConfidence={false}
@@ -175,32 +184,35 @@ export default function ResultsView({
         </div>
       </section>
 
-      {/* Structured output view */}
       <section aria-labelledby="output-heading">
         <h2
           id="output-heading"
           className="font-display text-lg text-ink sm:text-xl"
         >
-          Structured Record
+          {t.results.structuredRecord}
         </h2>
 
         <p className="mt-2 font-sans text-sm text-ink/60">
-          Demo representation of the extracted data — not a certified compliant
-          e-invoice.
+          {t.results.structuredDisclaimer}
         </p>
 
-        <pre className="mt-4 overflow-x-auto border border-ledger-line bg-white/60 p-4 font-mono text-xs leading-relaxed text-ink">
-          {JSON.stringify(record, null, 2)}
-        </pre>
+        <div className="mt-4 max-h-56 overflow-y-auto overflow-x-auto border border-ledger-line bg-white/60 shadow-inner">
+          <pre className="p-4 font-mono text-xs leading-relaxed text-ink">
+            {JSON.stringify(compactRecord, null, 2)}
+          </pre>
+        </div>
 
         <button
           type="button"
           onClick={() =>
-            downloadJson(record, `invoice-${caseRef.replace(/\s+/g, "-")}.json`)
+            downloadJson(
+              downloadRecord,
+              `invoice-${caseRef.replace(/\s+/g, "-")}.json`,
+            )
           }
-          className="mt-4 border-2 border-ink px-6 py-2.5 font-display text-sm tracking-widest text-ink transition-colors hover:bg-ink hover:text-paper focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stamp-review"
+          className={`mt-4 ${btnStamp}`}
         >
-          DOWNLOAD RECORD
+          {t.actions.download.toUpperCase()}
         </button>
       </section>
     </div>
