@@ -68,3 +68,7 @@ body {
     background-color 0.2s ease,
     color 0.2s ease;
 }
+
+html:not([data-ui-ready]) [data-pref-toggle] {
+  visibility: hidden;
+}

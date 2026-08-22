@@ -31,6 +31,7 @@ export default function LanguageSwitcher() {
 
   return (
     <div
+      data-pref-toggle
       className="inline-flex items-center gap-0.5 rounded-sm border border-ledger-line bg-surface/80 p-0.5 shadow-sm backdrop-blur-sm"
       role="group"
       aria-label={t.lang.switchTo}
