@@ -1,6 +1,12 @@
 import { GoogleGenAI, type Schema } from "@google/genai";
 
-export const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+export function getAi() {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("GEMINI_API_KEY is not configured");
+  }
+  return new GoogleGenAI({ apiKey });
+}
 
 export const EXTRACTION_PROMPT = `
 You are an invoice data extraction system. Extract the following fields from the provided invoice document. If a field is not present or not legible, return null for that field rather than guessing.

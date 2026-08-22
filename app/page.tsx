@@ -85,23 +85,24 @@ export default function Home() {
   const showResultsSection = isProcessing || Boolean(result);
 
   return (
-    <div className="relative flex flex-1 flex-col items-center px-4 py-12">
-      <div className="absolute right-4 top-4 z-10 sm:right-6 sm:top-6">
-        <LanguageSwitcher />
-      </div>
-
-      <main className="w-full max-w-5xl border border-ledger-line bg-paper p-6 sm:p-10">
-        <header className="mb-8 pt-8 text-center sm:pt-0">
-          <p className="font-sans text-xs uppercase tracking-[0.2em] text-ink/45">
-            {t.meta.eyebrow}
-          </p>
-          <h1 className="mt-2 font-display text-3xl text-ink sm:text-4xl">
-            {t.meta.productName}
-          </h1>
-          <p className="mx-auto mt-3 max-w-xl font-sans text-sm leading-relaxed text-ink/70">
-            {t.meta.tagline}
-          </p>
-          <p className="mt-2 font-sans text-xs text-ink/45">{t.meta.formats}</p>
+    <div className="flex flex-1 flex-col items-center px-3 py-6 sm:px-4 sm:py-10">
+      <main className="w-full max-w-5xl border border-ledger-line bg-paper p-4 sm:p-8 lg:p-10">
+        <header className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+          <div className="min-w-0 text-center sm:text-left">
+            <p className="font-sans text-xs uppercase tracking-[0.2em] text-ink/45">
+              {t.meta.eyebrow}
+            </p>
+            <h1 className="mt-2 font-display text-2xl text-ink sm:text-3xl lg:text-4xl">
+              {t.meta.productName}
+            </h1>
+            <p className="mx-auto mt-3 max-w-xl font-sans text-sm leading-relaxed text-ink/70 sm:mx-0">
+              {t.meta.tagline}
+            </p>
+            <p className="mt-2 font-sans text-xs text-ink/45">{t.meta.formats}</p>
+          </div>
+          <div className="flex shrink-0 justify-center sm:justify-end">
+            <LanguageSwitcher />
+          </div>
         </header>
 
         <UploadZone onFileAccepted={handleFileAccepted} />
@@ -123,13 +124,13 @@ export default function Home() {
           </>
         ) : null}
 
-        <div className="mt-6 flex flex-col items-center gap-3">
+        <div className="mt-6 flex flex-col items-stretch sm:items-center">
           <button
             type="button"
             onClick={handleProcess}
             disabled={!fileReady || isProcessing}
             aria-busy={isProcessing}
-            className={`${btnPrimary} min-w-[11rem]`}
+            className={`${btnPrimary} w-full sm:w-auto sm:min-w-[11rem]`}
           >
             {isProcessing ? t.actions.processing : t.actions.process}
           </button>
@@ -142,7 +143,7 @@ export default function Home() {
         ) : null}
 
         {showResultsSection ? (
-          <div className="mt-10 border-t border-ledger-line pt-10">
+          <div className="mt-8 border-t border-ledger-line pt-8 sm:mt-10 sm:pt-10">
             {isProcessing ? <ProcessingPanel /> : null}
             {result && !isProcessing ? (
               <ResultsView

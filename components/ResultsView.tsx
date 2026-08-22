@@ -94,24 +94,24 @@ export default function ResultsView({
   const caseRef = result.invoiceNumber ?? t.results.pending;
 
   return (
-    <div className="motion-safe:animate-fade-in space-y-14">
+    <div className="motion-safe:animate-fade-in space-y-10 sm:space-y-14">
       <section aria-labelledby="extraction-heading">
         <h2
           id="extraction-heading"
-          className="font-display text-xl text-ink sm:text-2xl"
+          className="font-display text-lg text-ink sm:text-xl lg:text-2xl"
         >
           {t.results.case}: {caseRef}
         </h2>
 
-        <div className="mt-8 grid gap-10 md:grid-cols-2">
+        <div className="mt-6 grid gap-8 sm:mt-8 md:grid-cols-2 md:gap-10">
           <div>
             {previewUrl && !isXml ? (
-              <div className="rotate-[1deg] border border-ledger-line bg-white p-2 shadow-md transition-shadow hover:shadow-lg">
+              <div className="border border-ledger-line bg-white p-2 shadow-md transition-shadow hover:shadow-lg sm:rotate-[1deg]">
                 {isPdf ? (
                   <iframe
                     src={previewUrl}
                     title={t.file.previewTitle}
-                    className="h-80 w-full"
+                    className="h-56 w-full sm:h-72 lg:h-80"
                   />
                 ) : null}
                 {isImage ? (
@@ -119,15 +119,15 @@ export default function ResultsView({
                   <img
                     src={previewUrl}
                     alt={t.file.previewTitle}
-                    className="max-h-80 w-full object-contain"
+                    className="max-h-56 w-full object-contain sm:max-h-72 lg:max-h-80"
                   />
                 ) : null}
               </div>
             ) : null}
 
             {xmlPreview && isXml ? (
-              <div className="rotate-[1deg] border border-ledger-line bg-white p-2 shadow-md transition-shadow hover:shadow-lg">
-                <pre className="max-h-80 overflow-y-auto p-3 font-mono text-xs text-ink">
+              <div className="border border-ledger-line bg-white p-2 shadow-md transition-shadow hover:shadow-lg sm:rotate-[1deg]">
+                <pre className="max-h-56 overflow-y-auto p-3 font-mono text-xs text-ink sm:max-h-72 lg:max-h-80">
                   {xmlPreview}
                 </pre>
               </div>
@@ -161,7 +161,7 @@ export default function ResultsView({
           {t.results.validationDecision}
         </h2>
 
-        <div className="py-8">
+        <div className="py-6 sm:py-8">
           <DecisionStamp decision={result.validation.decision} />
         </div>
 
@@ -210,7 +210,7 @@ export default function ResultsView({
               `invoice-${caseRef.replace(/\s+/g, "-")}.json`,
             )
           }
-          className={`mt-4 ${btnStamp}`}
+          className={`mt-4 w-full sm:w-auto ${btnStamp}`}
         >
           {t.actions.download.toUpperCase()}
         </button>

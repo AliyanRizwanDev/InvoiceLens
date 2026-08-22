@@ -1,5 +1,5 @@
 import {
-  ai,
+  getAi,
   EXTRACTION_PROMPT,
   invoiceSchema,
   stripBase64Prefix,
@@ -10,7 +10,7 @@ export async function extractWithGemini(
   file: string,
   mimeType: string,
 ): Promise<ExtractedInvoice> {
-  const response = await ai.models.generateContent({
+  const response = await getAi().models.generateContent({
     model: "gemini-flash-latest",
     contents: [
       {

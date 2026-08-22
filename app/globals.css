@@ -41,4 +41,5 @@
 body {
   background: var(--color-paper);
   color: var(--color-ink);
+  overflow-x: hidden;
 }

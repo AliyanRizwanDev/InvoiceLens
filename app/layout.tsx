@@ -26,6 +26,11 @@ export const metadata: Metadata = {
     "Review assistant for incoming German invoices. Extract, validate, and route to Release, Review, or Reject.",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html

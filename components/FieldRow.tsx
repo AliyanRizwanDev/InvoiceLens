@@ -27,7 +27,7 @@ export default function FieldRow({
 
   return (
     <div className="border-b border-ledger-line py-3">
-      <div className="flex items-baseline justify-between gap-4">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
         <div className="flex min-w-0 items-baseline gap-2">
           {statusConfig ? (
             <span
@@ -39,15 +39,21 @@ export default function FieldRow({
           ) : null}
           <span className="font-sans text-sm text-ink/70">{label}</span>
         </div>
-        <div className="flex shrink-0 items-baseline gap-2 text-right">
-          <span className="font-mono text-sm tabular-nums text-ink">{value}</span>
+        <div className="flex min-w-0 items-baseline gap-2 sm:justify-end sm:text-right">
+          <span className="break-all font-mono text-sm tabular-nums text-ink sm:break-normal">
+            {value}
+          </span>
           {showConfidence && confidence !== null ? (
-            <span className="font-sans text-xs text-ink/45">{confidence}%</span>
+            <span className="shrink-0 font-sans text-xs text-ink/45">
+              {confidence}%
+            </span>
           ) : null}
         </div>
       </div>
       {status && status !== "pass" && reason ? (
-        <p className="mt-1 pl-5 font-sans text-xs text-ink/60">{reason}</p>
+        <p className="mt-1 pl-0 font-sans text-xs leading-relaxed text-ink/60 sm:pl-5">
+          {reason}
+        </p>
       ) : null}
     </div>
   );

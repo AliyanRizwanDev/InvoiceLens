@@ -5,6 +5,7 @@ import { parseEmbeddedXml, tryExtractFromEmbeddedXml } from "@/lib/zugferd";
 import type { ExtractedInvoice } from "@/types/invoice";
 
 export const maxDuration = 30; // seconds — confirm against your Vercel project settings
+export const runtime = "nodejs";
 
 const EXTRACTION_ERROR =
   "Could not read this document. Try a clearer scan or a different file.";

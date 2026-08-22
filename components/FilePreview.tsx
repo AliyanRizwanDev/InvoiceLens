@@ -33,7 +33,7 @@ export default function FilePreview({
             <iframe
               src={previewUrl}
               title={t.file.previewTitle}
-              className="h-80 w-full"
+              className="h-56 w-full sm:h-72 lg:h-80"
             />
           ) : null}
           {isImage ? (
@@ -41,14 +41,14 @@ export default function FilePreview({
             <img
               src={previewUrl}
               alt={t.file.previewTitle}
-              className="max-h-80 w-full object-contain"
+              className="max-h-56 w-full object-contain sm:max-h-72 lg:max-h-80"
             />
           ) : null}
         </div>
       ) : null}
 
       {xmlPreview && isXml ? (
-        <pre className="max-h-80 overflow-y-auto p-4 font-mono text-xs leading-relaxed text-ink">
+        <pre className="max-h-56 overflow-y-auto p-3 font-mono text-xs leading-relaxed text-ink sm:max-h-72 sm:p-4 lg:max-h-80">
           {xmlPreview}
         </pre>
       ) : null}
