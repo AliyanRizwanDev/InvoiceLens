@@ -1,7 +1,7 @@
 {
   "name": "rechnungslens",
   "version": "1.0.0",
-  "description": "RechnungsLens — explainable incoming-invoice review for Germany. Extract, validate, route to Release, Review, or Reject.",
+  "description": "RechnungsLens: explainable incoming-invoice review for Germany. Extract, validate, route to Release, Review, or Reject.",
   "private": true,
   "scripts": {
     "dev": "next dev",

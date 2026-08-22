@@ -56,7 +56,7 @@ function checkVatId(
       confidence,
       status: "warning",
       reason:
-        "VAT ID doesn't match the DE + 9 digit format — this is a format check only, not proof the ID actually exists",
+        "VAT ID doesn't match the DE + 9 digit format. This is a format check only, not proof the ID actually exists",
     };
   }
 
@@ -74,7 +74,7 @@ function checkMath(
       value: grossAmount,
       confidence,
       status: "warning",
-      reason: "Can't verify the math — one or more amounts is missing",
+      reason: "Can't verify the math. One or more amounts is missing",
     };
   }
 
@@ -103,7 +103,7 @@ function checkPoNumber(
       confidence,
       status: "warning",
       reason:
-        "No purchase order number found — not required on every invoice, but worth a glance",
+        "No purchase order number found. Not required on every invoice, but worth a glance",
     };
   }
   return { value: poNumber, confidence, status: "pass", reason: "" };
@@ -118,7 +118,7 @@ function applyConfidenceDowngrade(result: FieldResult): FieldResult {
     return {
       ...result,
       status: "warning",
-      reason: `Low extraction confidence (${result.confidence}%) — the format looks fine, but this is worth a human glance`,
+      reason: `Low extraction confidence (${result.confidence}%). The format looks fine, but this is worth a human glance`,
     };
   }
   return result;

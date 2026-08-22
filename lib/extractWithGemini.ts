@@ -6,7 +6,7 @@ import {
 } from "@/lib/gemini";
 import type { ExtractedInvoice } from "@/types/invoice";
 
-/** Try in order — each model has its own free-tier quota bucket. */
+/** Try in order. Each model has its own free-tier quota bucket. */
 const EXTRACTION_MODELS = [
   "gemini-3.6-flash",
   "gemini-3.5-flash-lite",
@@ -87,7 +87,7 @@ async function extractWithModel(
   return { ...extracted, source: "ai-extraction" };
 }
 
-// ponytail: sequential model fallback, not parallel — keeps quota spikes predictable
+// ponytail: sequential model fallback, not parallel; keeps quota spikes predictable
 export async function extractWithGemini(
   file: string,
   mimeType: string,

@@ -4,13 +4,13 @@ Synthetic invoices for rehearsed RechnungsLens demos. Every file is engineered t
 
 | File | Designed to test | Expected decision |
 |---|---|---|
-| clean.pdf | Baseline — everything correct | Accept |
+| clean.pdf | Baseline (everything correct) | Accept |
 | math-error.pdf | Deterministic math check | Reject (Net + VAT ≠ Gross) |
 | missing-vat-id.pdf | Required field check | Reject (VAT ID missing) |
 | malformed-vat-format.pdf | Format check, not existence check | Review (VAT ID format) |
 | zugferd-compliant.pdf | Embedded-XML fast path (XML inside PDF) | Accept, 100% confidence, no AI call |
 | sample-zugferd.xml | Standalone ZUGFeRD/XRechnung XML upload | Accept, 100% confidence, no AI call |
-| messy-scan.jpg | Confidence-driven review — lead demo file | Review (low confidence / missing PO) |
+| messy-scan.jpg | Confidence-driven review, lead demo file | Review (low confidence / missing PO) |
 
 ## Regenerating fixtures
 
@@ -22,13 +22,13 @@ Requires Puppeteer (dev dependency). The ZUGFeRD hybrid PDF embeds parser-compat
 
 ## Verifying against the pipeline
 
-**Offline (default)** — confirms every fixture file exists, ZUGFeRD parsing works, and each file's *designed* extraction outcome produces the expected validation decision (no Gemini calls):
+**Offline (default):** confirms every fixture file exists, ZUGFeRD parsing works, and each file's *designed* extraction outcome produces the expected validation decision (no Gemini calls):
 
 ```bash
 npm run verify:fixtures
 ```
 
-**Live API** — uploads each file through `/api/extract` (requires `npm run dev`, `GEMINI_API_KEY`, and patience for free-tier rate limits):
+**Live API:** uploads each file through `/api/extract` (requires `npm run dev`, `GEMINI_API_KEY`, and patience for free-tier rate limits):
 
 ```bash
 npm run dev

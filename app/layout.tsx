@@ -24,7 +24,7 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "RechnungsLens — Incoming invoice review",
+  title: "RechnungsLens · Incoming invoice review",
   description:
     "Review assistant for incoming German invoices. Extract, validate, and route to Release, Review, or Reject.",
 };

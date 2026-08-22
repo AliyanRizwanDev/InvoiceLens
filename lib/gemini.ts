@@ -22,7 +22,7 @@ Fields to extract:
 - grossAmount: the total including tax, as a plain number
 - currency: the three-letter currency code (e.g. EUR)
 
-For each field, also provide a confidence score from 0 to 100 reflecting how certain you are that the extracted value is correct and clearly legible in the source document. A low score should reflect genuine uncertainty (e.g. blurry text, ambiguous formatting) — do not default every field to a high score.
+For each field, also provide a confidence score from 0 to 100 reflecting how certain you are that the extracted value is correct and clearly legible in the source document. A low score should reflect genuine uncertainty (e.g. blurry text, ambiguous formatting). Do not default every field to a high score.
 `;
 
 export const invoiceSchema = {

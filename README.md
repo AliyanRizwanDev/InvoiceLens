@@ -1,6 +1,6 @@
 # RechnungsLens
 
-**Incoming-invoice review for the German market** — upload, extract, validate, route.
+**Incoming-invoice review for the German market.** Upload, extract, validate, route.
 
 Upload a PDF, scan, photo, or structured e-invoice (XRechnung / ZUGFeRD). The app extracts fields with confidence scores, runs deterministic checks, and routes to **Release**, **Review**, or **Reject** with a reason per field.
 
@@ -29,7 +29,7 @@ Since January 2025, German businesses must be able to receive structured electro
          Release · Review · Reject
 ```
 
-Structured XML is read directly when present — no Gemini call. Everything else goes through Gemini with per-field confidence. Validation applies the same rules either way.
+Structured XML is read directly when present. No Gemini call. Everything else goes through Gemini with per-field confidence. Validation applies the same rules either way.
 
 ## Features
 
@@ -48,7 +48,7 @@ Structured XML is read directly when present — no Gemini call. Everything else
 | App | Next.js 16 · App Router · TypeScript · Tailwind CSS v4 |
 | AI extraction | Google Gemini API (`@google/genai`) |
 | XML / PDF | `fast-xml-parser` · `pdf-lib` (ZUGFeRD attachments) |
-| Upload | `react-dropzone` (3 MB cap — keeps base64 payloads under Vercel's 4.5 MB limit) |
+| Upload | `react-dropzone` (3 MB cap; keeps base64 payloads under Vercel's 4.5 MB limit) |
 
 Stateless: upload → process → show result. No database.
 
@@ -69,7 +69,7 @@ npm run dev
 Open [http://localhost:3000](http://localhost:3000).
 
 ```bash
-# .env.local — never commit
+# .env.local: never commit
 GEMINI_API_KEY=your_key_here
 ```
 

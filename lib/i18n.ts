@@ -4,10 +4,10 @@ export const translations = {
   en: {
     meta: {
       productName: "RechnungsLens",
-      pageTitle: "RechnungsLens — Incoming invoice review",
+      pageTitle: "RechnungsLens · Incoming invoice review",
       eyebrow: "Incoming invoices · Germany",
       tagline:
-        "Review assistant for incoming invoices: extract fields, run mandatory checks, then route to Release, Review, or Reject — with a clear reason for every field.",
+        "Review assistant for incoming invoices: extract fields, run mandatory checks, then route to Release, Review, or Reject, with a clear reason for every field.",
       formats: "PDF · Scan · ZUGFeRD (XML in PDF) · XRechnung (XML)",
     },
     upload: {
@@ -46,10 +46,10 @@ export const translations = {
       case: "Case",
       pending: "Pending",
       embeddedXmlNote:
-        "Structured data found — read directly, no AI extraction needed.",
+        "Structured data found. Read directly, no AI extraction needed.",
       structuredRecord: "Structured record",
       structuredDisclaimer:
-        "Demo representation of the extracted data — not a certified compliant e-invoice.",
+        "Demo representation of the extracted data. Not a certified compliant e-invoice.",
       validationDecision: "Validation decision",
     },
     stamp: {
@@ -83,10 +83,10 @@ export const translations = {
   de: {
     meta: {
       productName: "RechnungsLens",
-      pageTitle: "RechnungsLens — Eingangsrechnungen prüfen",
+      pageTitle: "RechnungsLens · Eingangsrechnungen prüfen",
       eyebrow: "Eingangsrechnungen · Deutschland",
       tagline:
-        "Prüfassistent für eingehende Rechnungen: Felder extrahieren, Pflichtregeln prüfen, dann Freigeben, Prüfen oder Ablehnen — mit nachvollziehbarer Begründung pro Feld.",
+        "Prüfassistent für eingehende Rechnungen: Felder extrahieren, Pflichtregeln prüfen, dann Freigeben, Prüfen oder Ablehnen, mit nachvollziehbarer Begründung pro Feld.",
       formats: "PDF · Scan · ZUGFeRD (XML in PDF) · XRechnung (XML)",
     },
     upload: {
@@ -126,10 +126,10 @@ export const translations = {
       case: "Vorgang",
       pending: "Ausstehend",
       embeddedXmlNote:
-        "Strukturierte Daten gefunden — direkt gelesen, keine KI-Extraktion nötig.",
+        "Strukturierte Daten gefunden. Direkt gelesen, keine KI-Extraktion nötig.",
       structuredRecord: "Strukturierter Datensatz",
       structuredDisclaimer:
-        "Demo-Darstellung der extrahierten Daten — keine zertifizierte E-Rechnung.",
+        "Demo-Darstellung der extrahierten Daten. Keine zertifizierte E-Rechnung.",
       validationDecision: "Prüfergebnis",
     },
     stamp: {

@@ -32,7 +32,7 @@ function formatFieldValue(
   value: string | number | null,
   currency: string | null,
 ): string {
-  if (value === null || value === "") return "—";
+  if (value === null || value === "") return "n/a";
   if (typeof value === "number") {
     const formatted = value.toLocaleString("de-DE", {
       minimumFractionDigits: 2,
