@@ -52,6 +52,8 @@ Structured XML is read directly when present — no Gemini call. Everything else
 
 Stateless: upload → process → show result. No database.
 
+**Live demo:** [rechnungs-lens-tawny.vercel.app](https://rechnungs-lens-tawny.vercel.app)
+
 ## Quick start
 
 **Requirements:** Node.js 20+ (24 LTS recommended), npm
@@ -116,4 +118,4 @@ Not production AP software, not legal or tax advice, and not a tool that generat
 
 ---
 
-Built by [Aliyan Rizwan](https://github.com/AliyanRizwanDev)
+Built by [Muhammad Alian](https://github.com/AliyanRizwanDev)
