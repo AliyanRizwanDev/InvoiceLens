@@ -1,6 +1,6 @@
 import { XMLParser } from "fast-xml-parser";
-import { getDocument, GlobalWorkerOptions } from "pdfjs-dist/legacy/build/pdf.mjs";
 import type { ExtractedInvoice } from "@/types/invoice";
+import type { PDFDocumentProxy } from "pdfjs-dist/types/src/display/api";
 
 const FIELD_KEYS = [
   "supplier",
@@ -19,12 +19,14 @@ const XML_NAME_HINT =
 
 let pdfJsReady = false;
 
-/** Serverless-safe: no worker file on disk (Vercel lambdas have no stable worker path). */
-function ensurePdfJs() {
-  if (pdfJsReady) return;
-  // ponytail: main-thread PDF parse; fine for single-page invoice attachments
-  (GlobalWorkerOptions as { disableWorker?: boolean }).disableWorker = true;
-  pdfJsReady = true;
+async function loadPdfJs() {
+  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+  if (!pdfJsReady) {
+    // ponytail: main-thread PDF parse; fine for single-page invoice attachments
+    (pdfjs.GlobalWorkerOptions as { disableWorker?: boolean }).disableWorker = true;
+    pdfJsReady = true;
+  }
+  return pdfjs.getDocument;
 }
 
 function scalar(value: unknown): string | null {
@@ -103,9 +105,9 @@ function pickXmlAttachmentName(names: string[]): string | null {
 export async function extractEmbeddedXmlFromPdf(
   pdfBytes: Uint8Array,
 ): Promise<string | null> {
-  ensurePdfJs();
+  const getDocument = await loadPdfJs();
 
-  const pdf = await getDocument({
+  const pdf: PDFDocumentProxy = await getDocument({
     data: pdfBytes,
     useWorkerFetch: false,
   }).promise;
