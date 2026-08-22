@@ -1,106 +1,150 @@
-# InvoiceLens
+# RechnungsLens
 
-**Explainable document intelligence for incoming German invoices.**
+**Explainable incoming-invoice review for the German market** — *Rechnung* (invoice) + *Lens* (inspect before it hits the books).
 
-Upload an invoice → extract structured data with per-field confidence scores → validate against deterministic German invoice rules → route to **Accept**, **Review**, or **Reject**, with a clear explanation of why.
+Upload a PDF, scan, photo, or structured e-invoice → extract fields with per-field confidence → run deterministic checks → route to **Release**, **Review**, or **Reject** with a reason for every field.
 
-> **Status:** Student-built prototype · synthetic data only · not for production use.
+Built for Germany's **E-Rechnung** reality: since January 2025, businesses must be able to receive structured electronic invoices. Most AP teams still get PDFs, scans, and the occasional ZUGFeRD/XRechnung file. RechnungsLens shows how to **ingest, validate, and explain** what came in — without pretending a blurry scan is a certified compliant invoice.
 
-## The problem
+> Portfolio prototype · synthetic test data · not production software or tax advice.
 
-Since **1 January 2025**, every business operating in Germany must be able to receive a structured electronic invoice (*E-Rechnung*). A plain PDF no longer counts under the new definition. The law expects machine-readable data, not a picture of an invoice.
+---
 
-A [Bitkom survey](https://www.bitkom.org) of 1,103 German companies (late 2024) found that only **45%** could actually receive a structured e-invoice, weeks before the requirement took effect.
+## Why this exists
 
-In practice, accounts payable teams still receive invoices in many formats: PDFs, scans, photos, and occasionally a proper structured file. There is no fast, reliable way to know if an invoice is compliant, complete, and correct before it enters the books.
+A [Bitkom survey](https://www.bitkom.org) of 1,103 German companies (late 2024) found only **45%** could receive a structured e-invoice weeks before the mandate took effect.
 
-## What InvoiceLens does
+The hard question is not “can AI read an invoice?” It is **“when should the system refuse to trust its own extraction?”** RechnungsLens answers that with confidence scores, deterministic rules, and an audit-style case file UI.
 
-InvoiceLens sits on the **receiving** side: understand what came in, validate it, flag problems, hand off clean data.
-
-It is deliberately **not** “PDF in, legally compliant XRechnung out.” Generating compliant outgoing invoices is a different, higher-liability problem. This project focuses on ingestion, validation, and explainable routing.
+## Pipeline
 
 ```
-       Invoice (PDF / scan / photo)
+       Invoice (PDF / scan / photo / XML)
                   │
-     Already a compliant ZUGFeRD/Factur-X file?
-       (has embedded structured XML)
+     ZUGFeRD or XRechnung with embedded XML?
           │                    │
          Yes                   No
           │                    │
    Parse XML directly    Gemini extraction
-   (no AI needed,        (with per-field
-    100% reliable)        confidence score)
+   (no AI, 100% conf.)  (per-field confidence)
           │                    │
           └────────┬───────────┘
                     ▼
-          Deterministic rules engine
-     (required fields, VAT ID format,
-        net + VAT = gross, PO presence)
+          Deterministic validation
+   (required fields · DE VAT format · net+VAT=gross · PO warning)
                     │
                     ▼
-              Decision engine
-          ┌─────────┼─────────┐
-          ▼         ▼         ▼
-       ACCEPT     REVIEW    REJECT
+         Release · Review · Reject
 ```
 
-The core engineering question is not “can AI read an invoice?” That is largely solved. It is **“can the system reliably decide when its own extraction should not be trusted?”**
+**ZUGFeRD / XRechnung fast path:** if structured XML is present, fields are read directly — no Gemini call, confidence locked at 100%.
+
+**Everything else:** Gemini extracts supplier, amounts, dates, VAT ID, PO number, etc., each with a confidence score. Low confidence or rule failures downgrade the decision.
+
+## Features
+
+| Area | What you get |
+|------|----------------|
+| **Upload** | Drag-and-drop PDF, JPG, PNG, or structured e-invoice XML (XRechnung / ZUGFeRD) |
+| **Preview** | Immediate file confirmation + inline preview before processing |
+| **Extraction** | Embedded-XML fast path or Gemini API with `@google/genai` |
+| **Validation** | Required fields, `DE` + 9-digit VAT format, math check (±€0.01), PO presence warning, confidence threshold at 70 |
+| **Results UI** | Ledger-style case file: field rows, decision stamp, compact JSON record + download |
+| **i18n** | English / German UI toggle (GitHub docs stay English) |
+| **Fixtures** | Six synthetic invoices with known outcomes + offline/live verification scripts |
+| **Tests** | Vitest suite for the validation engine |
 
 ## Tech stack
 
-| Piece | Choice |
+| Layer | Choice |
 |-------|--------|
-| Frontend + API | [Next.js 16](https://nextjs.org) (App Router, TypeScript, Tailwind CSS) |
-| AI extraction | [Google Gemini API](https://ai.google.dev) via `@google/genai` |
-| Hosting (planned) | Vercel (Hobby tier) |
+| App | [Next.js 16](https://nextjs.org) · App Router · TypeScript · Tailwind CSS v4 |
+| AI extraction | [Google Gemini API](https://ai.google.dev) |
+| XML / PDF | `fast-xml-parser` · `pdfjs-dist` · ZUGFeRD attachment parsing |
+| Upload | `react-dropzone` |
+| Dev tooling | Vitest · Puppeteer (fixture generation) · `pdf-lib` · `node-zugferd` |
 
-No database in v1. Upload, process, show result. Stateless by design for the demo.
+Stateless v1: upload → process → show result. No database.
 
-## Getting started
+## Quick start
 
-**Requirements:** Node.js 24 (Active LTS), npm
+**Requirements:** Node.js 20+ (24 LTS recommended), npm
 
 ```bash
-git clone https://github.com/AliyanRizwanDev/InvoiceLens.git
-cd InvoiceLens
+git clone https://github.com/AliyanRizwanDev/RechnungsLens.git
+cd RechnungsLens
 npm install
+cp .env.example .env.local   # add your Gemini key
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
 
-Environment variables (needed from Section 3 onward):
+### Environment
 
 ```bash
-# .env.local (never commit this file)
+# .env.local — never commit
 GEMINI_API_KEY=your_key_here
 ```
 
-Get a free API key from [Google AI Studio](https://aistudio.google.com/apikey).
+Free key: [Google AI Studio](https://aistudio.google.com/apikey). The ZUGFeRD fixture path works without a key; scans and plain PDFs need Gemini.
 
-## Project structure (planned)
+## Scripts
+
+| Command | Purpose |
+|---------|---------|
+| `npm run dev` | Local dev server |
+| `npm run build` | Production build |
+| `npm run test` | Vitest (validation rules) |
+| `npm run lint` | ESLint |
+| `npm run generate:fixtures` | Regenerate synthetic invoice PDFs/images |
+| `npm run verify:fixtures` | Offline fixture checks (no API key) |
+| `npm run verify:fixtures:live` | Full pipeline via `/api/extract` (needs dev server + key) |
+
+## Test fixtures
+
+Six engineered files in `fixtures/test-invoices/` — each designed for a specific demo outcome:
+
+| File | Expected decision |
+|------|-------------------|
+| `clean.pdf` | Release |
+| `math-error.pdf` | Reject (net + VAT ≠ gross) |
+| `missing-vat-id.pdf` | Reject |
+| `malformed-vat-format.pdf` | Review (VAT format) |
+| `zugferd-compliant.pdf` | Release via embedded XML (no AI) |
+| `messy-scan.jpg` | Review (low confidence / missing PO) |
+
+See [fixtures/test-invoices/README.md](fixtures/test-invoices/README.md) for regeneration and verification details.
+
+## Project layout
 
 ```
-invoicelens/
-├── app/              # Next.js App Router: pages and API routes
+├── app/
+│   ├── api/extract/     # POST upload → extract + validate
+│   └── page.tsx         # Upload, preview, results
+├── components/          # Upload zone, results case file, i18n shell
 ├── lib/
-│   ├── extract/      # Gemini extraction + ZUGFeRD/Factur-X parsing
-│   ├── rules/        # Deterministic German invoice validation
-│   └── decision/     # Accept / Review / Reject routing
-└── types/            # Shared data shapes (ExtractedInvoice, etc.)
+│   ├── zugferd.ts       # Embedded XML extraction
+│   ├── extractWithGemini.ts
+│   ├── validate.ts      # Deterministic rules engine
+│   └── i18n.ts          # EN / DE strings
+├── fixtures/test-invoices/
+├── scripts/             # generate + verify fixtures
+└── types/invoice.ts     # ExtractedInvoice, ValidationResult
 ```
 
 ## What this is (and is not)
 
 **This is:**
-- A portfolio project and engineering conversation starter
-- Built to demonstrate document intelligence, confidence scoring, and explainable validation
-- Tested with synthetic invoice data
+- A portfolio piece and conversation starter on explainable document intelligence
+- Focused on the **receiving** side: understand, validate, route — not generate outgoing XRechnung
+- Tested with synthetic data and offline verification
 
 **This is not:**
-- Production-ready software
-- Legal or tax advice
-- A replacement for DATEV, Candis, or any established AP automation platform
+- Production AP automation (DATEV, Candis, Rossum, Hypatos, etc. solve that at scale)
+- Legal, tax, or compliance certification
+- A guarantee that extracted VAT IDs exist or that math is legally correct beyond the checks implemented here
 
-The e-invoicing space is crowded (DATEV, Candis, Rossum, Hypatos, and others). This project does not try to compete with them. It digs into a specific sub-problem: **knowing when extracted data cannot be trusted.**
+---
+
+**RechnungsLens** · built by [Aliyan Rizwan](https://github.com/AliyanRizwanDev)

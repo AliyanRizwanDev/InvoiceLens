@@ -1,7 +1,7 @@
 {
-  "name": "invoicelens",
-  "version": "0.1.0",
-  "description": "Explainable document intelligence pipeline for incoming German invoices. Extract, validate, route to Accept, Review, or Reject.",
+  "name": "rechnungslens",
+  "version": "1.0.0",
+  "description": "RechnungsLens — explainable incoming-invoice review for Germany. Extract, validate, route to Release, Review, or Reject.",
   "private": true,
   "scripts": {
     "dev": "next dev",

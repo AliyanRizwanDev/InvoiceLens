@@ -1,6 +1,6 @@
 # Test Invoice Fixtures
 
-Synthetic invoices for rehearsed InvoiceLens demos. Every file is engineered to produce a known validation outcome.
+Synthetic invoices for rehearsed RechnungsLens demos. Every file is engineered to produce a known validation outcome.
 
 | File | Designed to test | Expected decision |
 |---|---|---|
