@@ -5,9 +5,24 @@ import UploadZone from "@/components/UploadZone";
 import { toBase64 } from "@/lib/toBase64";
 import type { ExtractedInvoice } from "@/types/invoice";
 
+function fileMimeType(file: File): string {
+  if (file.type) return file.type;
+  if (file.name.toLowerCase().endsWith(".xml")) return "application/xml";
+  return file.type;
+}
+
+function isXmlFile(file: File): boolean {
+  return isXmlMime(fileMimeType(file)) || file.name.toLowerCase().endsWith(".xml");
+}
+
+function isXmlMime(mimeType: string): boolean {
+  return mimeType === "application/xml" || mimeType === "text/xml";
+}
+
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [xmlPreview, setXmlPreview] = useState<string | null>(null);
   const [base64Data, setBase64Data] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [extracted, setExtracted] = useState<ExtractedInvoice | null>(null);
@@ -16,12 +31,28 @@ export default function Home() {
   useEffect(() => {
     if (!file) {
       setPreviewUrl(null);
+      setXmlPreview(null);
       setBase64Data(null);
       return;
     }
 
     setExtracted(null);
     setError(null);
+    setXmlPreview(null);
+
+    if (isXmlFile(file)) {
+      setPreviewUrl(null);
+      let cancelled = false;
+      void file.text().then((text) => {
+        if (!cancelled) setXmlPreview(text);
+      });
+      void toBase64(file).then((data) => {
+        if (!cancelled) setBase64Data(data);
+      });
+      return () => {
+        cancelled = true;
+      };
+    }
 
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
@@ -48,7 +79,7 @@ export default function Home() {
       const response = await fetch("/api/extract", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ file: base64Data, mimeType: file.type }),
+        body: JSON.stringify({ file: base64Data, mimeType: fileMimeType(file) }),
       });
       const result = await response.json();
 
@@ -67,6 +98,7 @@ export default function Home() {
 
   const isPdf = file?.type === "application/pdf";
   const isImage = file?.type.startsWith("image/") ?? false;
+  const isXml = file ? isXmlFile(file) : false;
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center bg-zinc-100 px-4 py-12 font-sans dark:bg-zinc-950">
@@ -80,7 +112,7 @@ export default function Home() {
 
         <UploadZone onFileAccepted={setFile} />
 
-        {previewUrl && file ? (
+        {previewUrl && file && !isXml ? (
           <div className="mt-6 overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
             {isPdf ? (
               <iframe
@@ -97,6 +129,12 @@ export default function Home() {
               />
             ) : null}
           </div>
+        ) : null}
+
+        {xmlPreview && isXml ? (
+          <pre className="mt-6 max-h-96 overflow-auto rounded-lg border border-zinc-200 bg-zinc-50 p-4 text-left text-xs text-zinc-800 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-200">
+            {xmlPreview}
+          </pre>
         ) : null}
 
         <div className="mt-6 flex flex-col items-center gap-3">

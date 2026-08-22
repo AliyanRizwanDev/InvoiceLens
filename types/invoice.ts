@@ -11,3 +11,21 @@ export interface ExtractedInvoice {
   confidence: Record<string, number>; // per-field confidence, 0–100
   source: "embedded-xml" | "ai-extraction";
 }
+
+export type FieldStatus = "pass" | "warning" | "fail";
+
+export interface FieldResult {
+  value: string | number | null;
+  confidence: number | null;
+  status: FieldStatus;
+  reason: string;
+}
+
+export interface ValidationResult {
+  decision: "accept" | "review" | "reject";
+  fields: Record<string, FieldResult>;
+}
+
+export interface ExtractedInvoiceWithValidation extends ExtractedInvoice {
+  validation: ValidationResult;
+}

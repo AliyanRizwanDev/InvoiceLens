@@ -15,7 +15,7 @@ function rejectionMessage(rejections: readonly FileRejection[]): string | null {
   if (!error) return "File could not be accepted.";
   if (error.code === "file-too-large") return "File is too large (max 10MB).";
   if (error.code === "file-invalid-type") {
-    return "Only PDF, JPG, and PNG files are supported.";
+    return "Only PDF, JPG, PNG, and XML files are supported.";
   }
   return error.message;
 }
@@ -27,6 +27,8 @@ export default function UploadZone({ onFileAccepted }: UploadZoneProps) {
         "application/pdf": [".pdf"],
         "image/jpeg": [".jpg", ".jpeg"],
         "image/png": [".png"],
+        "application/xml": [".xml"],
+        "text/xml": [".xml"],
       },
       maxSize: MAX_FILE_SIZE,
       onDropAccepted: (files) => {
@@ -54,7 +56,7 @@ export default function UploadZone({ onFileAccepted }: UploadZoneProps) {
             : "Drag and drop an invoice here"}
         </p>
         <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
-          or click to browse · PDF, JPG, PNG · max 10MB
+          or click to browse · PDF, JPG, PNG, XML · max 10MB
         </p>
       </div>
 
