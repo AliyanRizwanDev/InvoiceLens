@@ -4,7 +4,7 @@ import { useDropzone, type FileRejection } from "react-dropzone";
 import { useLanguage } from "@/components/LanguageProvider";
 import { dropzoneActive, dropzoneBase, dropzoneIdle } from "@/lib/ui";
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024;
+const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB — base64 stays under Vercel's 4.5MB body limit
 
 type UploadZoneProps = {
   onFileAccepted: (file: File) => void;

@@ -14,11 +14,11 @@ export const translations = {
       dragActive: "Drop your invoice here",
       dragIdle: "Drag and drop an invoice here, or click to browse",
       formats: "PDF · JPG · PNG · structured e-invoice (XRechnung / ZUGFeRD XML)",
-      maxSize: "max. 10 MB",
+      maxSize: "max. 3 MB",
       xmlNote:
         "Note: any .xml file can be selected, but only XRechnung or ZUGFeRD invoice XML is processed. Other XML fails at processing time.",
       rejectGeneric: "File could not be accepted.",
-      rejectSize: "File is too large (max. 10 MB).",
+      rejectSize: "File is too large (max. 3 MB).",
       rejectType:
         "Only PDF, JPG, PNG, or structured e-invoice XML (XRechnung / ZUGFeRD).",
     },
@@ -89,11 +89,11 @@ export const translations = {
       dragIdle: "Rechnung hier ablegen oder auswählen",
       formats:
         "PDF · JPG · PNG · strukturierte E-Rechnung (XRechnung / ZUGFeRD-XML)",
-      maxSize: "max. 10 MB",
+      maxSize: "max. 3 MB",
       xmlNote:
         "Hinweis: Beliebige XML-Dateien lassen sich zwar hochladen, verarbeitet werden nur Rechnungen im XRechnung- oder ZUGFeRD-Format.",
       rejectGeneric: "Datei konnte nicht übernommen werden.",
-      rejectSize: "Datei ist zu groß (max. 10 MB).",
+      rejectSize: "Datei ist zu groß (max. 3 MB).",
       rejectType:
         "Nur PDF, JPG, PNG oder strukturierte E-Rechnungs-XML (XRechnung / ZUGFeRD).",
     },
