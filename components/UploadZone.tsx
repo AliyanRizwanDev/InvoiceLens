@@ -43,25 +43,25 @@ export default function UploadZone({ onFileAccepted }: UploadZoneProps) {
     <div className="space-y-3">
       <div
         {...getRootProps()}
-        className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-6 py-12 text-center transition-colors ${
+        className={`flex cursor-pointer flex-col items-center justify-center border-2 border-dashed px-6 py-12 text-center transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stamp-review ${
           isDragActive
-            ? "border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-950/30"
-            : "border-zinc-300 bg-zinc-50 hover:border-zinc-400 dark:border-zinc-600 dark:bg-zinc-900/50 dark:hover:border-zinc-500"
+            ? "border-stamp-review bg-white/60"
+            : "border-ledger-line bg-white/40 hover:border-ink/30"
         }`}
       >
         <input {...getInputProps()} />
-        <p className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
+        <p className="font-sans text-sm font-medium text-ink">
           {isDragActive
             ? "Drop your invoice here"
             : "Drag and drop an invoice here"}
         </p>
-        <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
+        <p className="mt-2 font-sans text-xs text-ink/50">
           or click to browse · PDF, JPG, PNG, XML · max 10MB
         </p>
       </div>
 
       {errorMessage ? (
-        <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+        <p className="font-sans text-sm text-stamp-reject" role="alert">
           {errorMessage}
         </p>
       ) : null}

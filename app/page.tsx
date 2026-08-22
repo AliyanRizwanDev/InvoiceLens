@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import ResultsView from "@/components/ResultsView";
 import UploadZone from "@/components/UploadZone";
 import { toBase64 } from "@/lib/toBase64";
-import type { ExtractedInvoice } from "@/types/invoice";
+import type { ExtractedInvoiceWithValidation } from "@/types/invoice";
 
 function fileMimeType(file: File): string {
   if (file.type) return file.type;
@@ -25,7 +26,9 @@ export default function Home() {
   const [xmlPreview, setXmlPreview] = useState<string | null>(null);
   const [base64Data, setBase64Data] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [extracted, setExtracted] = useState<ExtractedInvoice | null>(null);
+  const [result, setResult] = useState<ExtractedInvoiceWithValidation | null>(
+    null,
+  );
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -36,7 +39,7 @@ export default function Home() {
       return;
     }
 
-    setExtracted(null);
+    setResult(null);
     setError(null);
     setXmlPreview(null);
 
@@ -73,7 +76,7 @@ export default function Home() {
 
     setIsProcessing(true);
     setError(null);
-    setExtracted(null);
+    setResult(null);
 
     try {
       const response = await fetch("/api/extract", {
@@ -81,16 +84,21 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ file: base64Data, mimeType: fileMimeType(file) }),
       });
-      const result = await response.json();
+      const data = await response.json();
 
-      if (!response.ok || result.error) {
-        setError(result.error ?? "Could not read this document. Try a clearer scan or a different file.");
+      if (!response.ok || data.error) {
+        setError(
+          data.error ??
+            "Could not read this document. Try a clearer scan or a different file.",
+        );
         return;
       }
 
-      setExtracted(result as ExtractedInvoice);
+      setResult(data as ExtractedInvoiceWithValidation);
     } catch {
-      setError("Could not read this document. Try a clearer scan or a different file.");
+      setError(
+        "Could not read this document. Try a clearer scan or a different file.",
+      );
     } finally {
       setIsProcessing(false);
     }
@@ -101,68 +109,60 @@ export default function Home() {
   const isXml = file ? isXmlFile(file) : false;
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center bg-zinc-100 px-4 py-12 font-sans dark:bg-zinc-950">
-      <main className="w-full max-w-2xl rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:p-8">
-        <h1 className="text-center text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
+    <div className="flex flex-1 flex-col items-center px-4 py-12">
+      <main className="w-full max-w-5xl border border-ledger-line bg-paper p-6 sm:p-10">
+        <h1 className="text-center font-display text-3xl text-ink sm:text-4xl">
           InvoiceLens
         </h1>
-        <p className="mt-2 mb-8 text-center text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-2 mb-8 text-center font-sans text-sm text-ink/70">
           Upload an invoice to extract and validate its data
         </p>
 
         <UploadZone onFileAccepted={setFile} />
 
-        {previewUrl && file && !isXml ? (
-          <div className="mt-6 overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
-            {isPdf ? (
-              <iframe
-                src={previewUrl}
-                title="Invoice preview"
-                className="h-96 w-full"
-              />
-            ) : null}
-            {isImage ? (
-              <img
-                src={previewUrl}
-                alt="Invoice preview"
-                className="max-h-96 w-full object-contain"
-              />
-            ) : null}
+        {isProcessing ? (
+          <div className="mt-8 space-y-3" aria-busy="true" aria-live="polite">
+            <p className="font-sans text-sm text-ink/70">Reading invoice...</p>
+            <div className="space-y-0">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="flex justify-between border-b border-ledger-line py-3"
+                >
+                  <div className="h-4 w-24 bg-ledger-line/40 motion-safe:animate-pulse" />
+                  <div className="h-4 w-32 bg-ledger-line/40 motion-safe:animate-pulse" />
+                </div>
+              ))}
+            </div>
           </div>
-        ) : null}
-
-        {xmlPreview && isXml ? (
-          <pre className="mt-6 max-h-96 overflow-auto rounded-lg border border-zinc-200 bg-zinc-50 p-4 text-left text-xs text-zinc-800 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-200">
-            {xmlPreview}
-          </pre>
-        ) : null}
-
-        <div className="mt-6 flex flex-col items-center gap-3">
-          <button
-            type="button"
-            onClick={handleProcess}
-            disabled={!file || !base64Data || isProcessing}
-            className="rounded-lg bg-zinc-900 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
-          >
-            {isProcessing ? "Reading invoice..." : "Process Invoice"}
-          </button>
-          {isProcessing ? (
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Reading invoice...
-            </p>
-          ) : null}
-        </div>
+        ) : (
+          <div className="mt-6 flex flex-col items-center gap-3">
+            <button
+              type="button"
+              onClick={handleProcess}
+              disabled={!file || !base64Data}
+              className="border-2 border-ink px-6 py-2.5 font-sans text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-paper focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stamp-review disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Process Invoice
+            </button>
+          </div>
+        )}
 
         {error ? (
-          <p className="mt-6 text-sm text-red-600 dark:text-red-400" role="alert">
+          <p className="mt-6 font-sans text-sm text-stamp-reject" role="alert">
             {error}
           </p>
         ) : null}
 
-        {extracted ? (
-          <pre className="mt-6 max-h-96 overflow-auto rounded-lg border border-zinc-200 bg-zinc-50 p-4 text-left text-xs text-zinc-800 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-200">
-            {JSON.stringify(extracted, null, 2)}
-          </pre>
+        {result ? (
+          <ResultsView
+            result={result}
+            previewUrl={previewUrl}
+            xmlPreview={xmlPreview}
+            isPdf={isPdf}
+            isImage={isImage}
+            isXml={isXml}
+          />
         ) : null}
       </main>
     </div>
