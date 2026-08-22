@@ -6,7 +6,7 @@ Upload a PDF, scan, photo, or structured e-invoice (XRechnung / ZUGFeRD). The ap
 
 Since January 2025, German businesses must be able to receive structured electronic invoices (*E-Rechnung*). In practice, AP teams still get PDFs, scans, and the occasional proper XML file. RechnungsLens focuses on the receiving side: understand what came in, flag problems, explain the decision.
 
-> Student portfolio project · synthetic test data only · not production software or tax advice.
+> Student project · synthetic test data only · not production software or tax advice.
 
 ## Pipeline
 
