@@ -106,7 +106,7 @@ export default function ResultsView({
         <div className="mt-6 grid gap-8 sm:mt-8 md:grid-cols-2 md:gap-10">
           <div>
             {previewUrl && !isXml ? (
-              <div className="border border-ledger-line bg-white p-2 shadow-md transition-shadow hover:shadow-lg sm:rotate-[1deg]">
+              <div className="border border-ledger-line bg-surface p-2 shadow-md transition-shadow hover:shadow-lg sm:rotate-[1deg]">
                 {isPdf ? (
                   <iframe
                     src={previewUrl}
@@ -126,7 +126,7 @@ export default function ResultsView({
             ) : null}
 
             {xmlPreview && isXml ? (
-              <div className="border border-ledger-line bg-white p-2 shadow-md transition-shadow hover:shadow-lg sm:rotate-[1deg]">
+              <div className="border border-ledger-line bg-surface p-2 shadow-md transition-shadow hover:shadow-lg sm:rotate-[1deg]">
                 <pre className="max-h-56 overflow-y-auto p-3 font-mono text-xs text-ink sm:max-h-72 lg:max-h-80">
                   {xmlPreview}
                 </pre>
@@ -196,7 +196,7 @@ export default function ResultsView({
           {t.results.structuredDisclaimer}
         </p>
 
-        <div className="mt-4 max-h-56 overflow-y-auto overflow-x-auto border border-ledger-line bg-white/60 shadow-inner">
+        <div className="mt-4 max-h-56 overflow-y-auto overflow-x-auto border border-ledger-line bg-surface/60 shadow-inner">
           <pre className="p-4 font-mono text-xs leading-relaxed text-ink">
             {JSON.stringify(compactRecord, null, 2)}
           </pre>

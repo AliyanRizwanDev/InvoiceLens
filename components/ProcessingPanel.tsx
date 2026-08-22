@@ -14,7 +14,7 @@ export default function ProcessingPanel() {
     >
       <p className="font-sans text-sm text-ink/70">{t.actions.processing}</p>
       <div className="grid gap-10 md:grid-cols-2">
-        <div className="h-80 border border-ledger-line bg-white/50 motion-safe:animate-pulse" />
+        <div className="h-80 border border-ledger-line bg-surface/50 motion-safe:animate-pulse" />
         <div className="space-y-0">
           {Array.from({ length: 6 }).map((_, i) => (
             <div

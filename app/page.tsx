@@ -4,6 +4,7 @@ import { useState } from "react";
 import FilePreview from "@/components/FilePreview";
 import FileUploadStatus from "@/components/FileUploadStatus";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import ThemeToggle from "@/components/ThemeToggle";
 import { useLanguage } from "@/components/LanguageProvider";
 import ProcessingPanel from "@/components/ProcessingPanel";
 import ResultsView from "@/components/ResultsView";
@@ -100,7 +101,8 @@ export default function Home() {
             </p>
             <p className="mt-2 font-sans text-xs text-ink/45">{t.meta.formats}</p>
           </div>
-          <div className="flex shrink-0 justify-center sm:justify-end">
+          <div className="flex shrink-0 flex-wrap items-center justify-center gap-2 sm:justify-end">
+            <ThemeToggle />
             <LanguageSwitcher />
           </div>
         </header>

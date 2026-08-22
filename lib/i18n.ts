@@ -74,6 +74,11 @@ export const translations = {
       de: "Deutsch",
       switchTo: "Switch language",
     },
+    theme: {
+      light: "Light",
+      dark: "Dark",
+      switchTo: "Switch theme",
+    },
   },
   de: {
     meta: {
@@ -148,6 +153,11 @@ export const translations = {
       en: "English",
       de: "Deutsch",
       switchTo: "Sprache wechseln",
+    },
+    theme: {
+      light: "Hell",
+      dark: "Dunkel",
+      switchTo: "Design wechseln",
     },
   },
 } as const satisfies Record<Locale, Record<string, unknown>>;

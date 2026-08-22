@@ -22,7 +22,7 @@ export default function FilePreview({
   if (!previewUrl && !xmlPreview) return null;
 
   return (
-    <div className="mt-4 overflow-hidden border border-ledger-line bg-white shadow-sm transition-shadow hover:shadow-md">
+    <div className="mt-4 overflow-hidden border border-ledger-line bg-surface shadow-sm transition-shadow hover:shadow-md">
       <p className="border-b border-ledger-line px-4 py-2 font-sans text-xs uppercase tracking-wide text-ink/50">
         {t.file.preview}
       </p>

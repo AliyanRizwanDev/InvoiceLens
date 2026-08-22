@@ -1,12 +1,34 @@
 @import "tailwindcss";
 
+:root {
+  --theme-paper: #edeee6;
+  --theme-ink: #1f2a22;
+  --theme-ledger-line: #c7cbbd;
+  --theme-surface: #ffffff;
+  --theme-stamp-accept: #2f6b4f;
+  --theme-stamp-review: #b8842e;
+  --theme-stamp-reject: #a13d2e;
+}
+
+html.dark {
+  color-scheme: dark;
+  --theme-paper: #121714;
+  --theme-ink: #e3e8e0;
+  --theme-ledger-line: #3d4a42;
+  --theme-surface: #1a221d;
+  --theme-stamp-accept: #5cb888;
+  --theme-stamp-review: #d9a84a;
+  --theme-stamp-reject: #d66a58;
+}
+
 @theme {
-  --color-paper: #edeee6;
-  --color-ink: #1f2a22;
-  --color-ledger-line: #c7cbbd;
-  --color-stamp-accept: #2f6b4f;
-  --color-stamp-review: #b8842e;
-  --color-stamp-reject: #a13d2e;
+  --color-paper: var(--theme-paper);
+  --color-ink: var(--theme-ink);
+  --color-ledger-line: var(--theme-ledger-line);
+  --color-surface: var(--theme-surface);
+  --color-stamp-accept: var(--theme-stamp-accept);
+  --color-stamp-review: var(--theme-stamp-review);
+  --color-stamp-reject: var(--theme-stamp-reject);
 
   --font-display: var(--font-fraunces), serif;
   --font-sans: var(--font-plex-sans), sans-serif;
@@ -42,4 +64,7 @@ body {
   background: var(--color-paper);
   color: var(--color-ink);
   overflow-x: hidden;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }

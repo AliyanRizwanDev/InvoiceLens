@@ -44,7 +44,7 @@ export default function FileUploadStatus({
 
   return (
     <div
-      className="mt-6 border border-ledger-line bg-white/70 px-4 py-3"
+      className="mt-6 border border-ledger-line bg-surface/70 px-4 py-3"
       role="status"
       aria-live="polite"
     >

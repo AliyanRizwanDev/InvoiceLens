@@ -10,6 +10,6 @@ export const dropzoneBase =
   "flex cursor-pointer flex-col items-center justify-center border-2 border-dashed px-4 py-8 text-center transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stamp-review sm:px-6 sm:py-12";
 
 export const dropzoneIdle =
-  "border-ledger-line bg-white/40 hover:border-ink/35 hover:bg-white/60 hover:shadow-sm";
+  "border-ledger-line bg-surface/40 hover:border-ink/35 hover:bg-surface/60 hover:shadow-sm";
 
-export const dropzoneActive = "border-stamp-review bg-white/70 shadow-sm";
+export const dropzoneActive = "border-stamp-review bg-surface/70 shadow-sm";
