@@ -47,7 +47,7 @@ Structured XML is read directly when present — no Gemini call. Everything else
 |-------|--------|
 | App | Next.js 16 · App Router · TypeScript · Tailwind CSS v4 |
 | AI extraction | Google Gemini API (`@google/genai`) |
-| XML / PDF | `fast-xml-parser` · `pdfjs-dist` |
+| XML / PDF | `fast-xml-parser` · `pdf-lib` (ZUGFeRD attachments) |
 | Upload | `react-dropzone` (3 MB cap — keeps base64 payloads under Vercel's 4.5 MB limit) |
 
 Stateless: upload → process → show result. No database.

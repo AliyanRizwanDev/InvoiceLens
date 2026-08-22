@@ -1,6 +1,17 @@
 import { XMLParser } from "fast-xml-parser";
+import {
+  PDFArray,
+  PDFDict,
+  PDFDocument,
+  PDFHexString,
+  PDFName,
+  PDFStream,
+  PDFString,
+  decodePDFRawStream,
+  type PDFObject,
+  type PDFRawStream,
+} from "pdf-lib";
 import type { ExtractedInvoice } from "@/types/invoice";
-import type { PDFDocumentProxy } from "pdfjs-dist/types/src/display/api";
 
 const FIELD_KEYS = [
   "supplier",
@@ -16,18 +27,6 @@ const FIELD_KEYS = [
 
 const XML_NAME_HINT =
   /zugferd|factur-x|facturx|xrechnung|order-x|invoice\.xml|\.xml$/i;
-
-let pdfJsReady = false;
-
-async function loadPdfJs() {
-  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-  if (!pdfJsReady) {
-    // ponytail: main-thread PDF parse; fine for single-page invoice attachments
-    (pdfjs.GlobalWorkerOptions as { disableWorker?: boolean }).disableWorker = true;
-    pdfJsReady = true;
-  }
-  return pdfjs.getDocument;
-}
 
 function scalar(value: unknown): string | null {
   if (value == null) return null;
@@ -102,29 +101,62 @@ function pickXmlAttachmentName(names: string[]): string | null {
   return ranked[0] ?? null;
 }
 
+function decodeAttachmentName(value: PDFObject): string {
+  if (value instanceof PDFString || value instanceof PDFHexString) {
+    return value.decodeText();
+  }
+  throw new Error("Unexpected embedded file name type");
+}
+
+async function readPdfAttachments(
+  pdfBytes: Uint8Array,
+): Promise<{ name: string; data: Uint8Array }[]> {
+  const pdfDoc = await PDFDocument.load(pdfBytes, { ignoreEncryption: true });
+  const catalog = pdfDoc.catalog;
+
+  if (!catalog.has(PDFName.of("Names"))) return [];
+
+  const names = catalog.lookup(PDFName.of("Names"), PDFDict);
+  if (!names.has(PDFName.of("EmbeddedFiles"))) return [];
+
+  const embeddedFiles = names.lookup(PDFName.of("EmbeddedFiles"), PDFDict);
+  if (!embeddedFiles.has(PDFName.of("Names"))) return [];
+
+  const efNames = embeddedFiles.lookup(PDFName.of("Names"), PDFArray);
+  const attachments: { name: string; data: Uint8Array }[] = [];
+
+  for (let i = 0; i < efNames.size(); i += 2) {
+    const nameObject = efNames.lookup(i);
+    if (!nameObject) continue;
+    const fileName = decodeAttachmentName(nameObject);
+    const fileSpec = efNames.lookup(i + 1, PDFDict);
+    const stream = fileSpec
+      .lookup(PDFName.of("EF"), PDFDict)
+      .lookup(PDFName.of("F"), PDFStream);
+    attachments.push({
+      name: fileName,
+      data: decodePDFRawStream(stream as unknown as PDFRawStream).decode(),
+    });
+  }
+
+  return attachments;
+}
+
 export async function extractEmbeddedXmlFromPdf(
   pdfBytes: Uint8Array,
 ): Promise<string | null> {
-  const getDocument = await loadPdfJs();
+  const attachments = await readPdfAttachments(pdfBytes);
+  if (attachments.length === 0) return null;
 
-  const pdf: PDFDocumentProxy = await getDocument({
-    data: pdfBytes,
-    useWorkerFetch: false,
-  }).promise;
-  const attachments = await pdf.getAttachments();
-  if (!attachments || attachments.size === 0) return null;
-
-  const attachmentName = pickXmlAttachmentName([...attachments.keys()]);
+  const attachmentName = pickXmlAttachmentName(
+    attachments.map((attachment) => attachment.name),
+  );
   if (!attachmentName) return null;
 
-  const meta = attachments.get(attachmentName);
-  if (!meta) return null;
+  const match = attachments.find((attachment) => attachment.name === attachmentName);
+  if (!match) return null;
 
-  const content =
-    meta.content ?? (await pdf.getAttachmentContent(attachmentName));
-  if (!content) return null;
-
-  return new TextDecoder("utf-8").decode(content);
+  return new TextDecoder("utf-8").decode(match.data);
 }
 
 // ponytail: best-effort CII tag mapping, not a full ZUGFeRD parser
