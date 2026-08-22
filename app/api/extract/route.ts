@@ -1,4 +1,4 @@
-import { extractWithGemini } from "@/lib/extractWithGemini";
+import { extractWithGemini, ExtractionError } from "@/lib/extractWithGemini";
 import { stripBase64Prefix } from "@/lib/gemini";
 import { validateInvoice } from "@/lib/validate";
 import { parseEmbeddedXml, tryExtractFromEmbeddedXml } from "@/lib/zugferd";
@@ -64,6 +64,9 @@ export async function POST(request: Request) {
     return respondWithValidation(extracted);
   } catch (error) {
     console.error("Extraction failed:", error);
+    if (error instanceof ExtractionError) {
+      return Response.json({ error: error.message }, { status: error.status });
+    }
     return Response.json({ error: EXTRACTION_ERROR }, { status: 500 });
   }
 }
